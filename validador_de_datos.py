@@ -62,7 +62,9 @@ def validate(data):
     return True
 
 def find_invalid_records(patient_id, age, gender, diagnosis, medications, last_visit_id):
-    constraints = {}
+    constraints = {
+        'patient_id': isinstance(patient_id, str)
+    }
     return constraints
 
 validate(medical_records)
