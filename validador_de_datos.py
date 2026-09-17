@@ -1,3 +1,4 @@
+import re
 medical_records = [
     {
         'patient_id': 'P1001',
@@ -63,9 +64,9 @@ def validate(data):
 
 def find_invalid_records(patient_id, age, gender, diagnosis, medications, last_visit_id):
     constraints = {
-        'patient_id': isinstance(patient_id, str)
+        'patient_id': isinstance(patient_id, str) and re.search('p', patient_id,re.IGNORECASE)
     }
     return constraints
 
 validate(medical_records)
-find_invalid_records
+print(find_invalid_records(**medical_records[0]))
