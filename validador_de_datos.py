@@ -50,12 +50,19 @@ def validate(data):
         if not isinstance(dictionary, dict):
             print(f'Invalid format: expected a dictionary at position {index}.')
             is_invalid = True
+            continue
 
         if set(dictionary.keys()) != key_set:
             print(
                 f'Invalid format: {dictionary} at position {index} has missing and/or invalid keys.'
             )
             is_invalid = True
+            continue
+        invalid_records = find_invalid_records(**dictionary)
+
+        for i in invalid_records:
+            print(f"Unexpected format '<key>: <val>' at position <index>.")
+            pass
 
     if is_invalid:
         return False
@@ -63,10 +70,15 @@ def validate(data):
     return True
 
 def find_invalid_records(patient_id, age, gender, diagnosis, medications, last_visit_id):
+
     constraints = {
-        'patient_id': isinstance(patient_id, str) and re.search('p', patient_id,re.IGNORECASE)
+        'patient_id': isinstance(patient_id, str) and re.fullmatch('p\d+', patient_id,re.IGNORECASE),
+        'age':isinstance(age,int) and age >= 18,
+        'gender':isinstance(gender,str) and gender.lower() in ('male','female'),
+        'diagnosis':isinstance(diagnosis,str) or diagnosis is None,
+        'medications':isinstance(medications,list) and all([isinstance(i, str) for i in medications]),
+        'last_visit_id':isinstance(last_visit_id,str) and re.fullmatch('v\d+', last_visit_id, re.IGNORECASE)
     }
-    return constraints
+    return [ key for key,  value in constraints.items() if not value]
 
 validate(medical_records)
-print(find_invalid_records(**medical_records[0]))
